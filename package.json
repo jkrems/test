@@ -19,5 +19,12 @@
   "bugs": {
     "url": "https://github.com/jkrems/test/issues"
   },
-  "homepage": "https://github.com/jkrems/test#readme"
+  "homepage": "https://github.com/jkrems/test#readme",
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "puppeteer": "^1.17.0"
+  },
+  "dependencies": {
+    "chrome-remote-interface": "^0.27.2"
+  }
 }
