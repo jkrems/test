@@ -1,108 +1,40 @@
 'use strict';
 
-const { Session } = require('inspector');
-const { fileURLToPath } = require('url');
-
 const { expect } = require('chai');
 
-function getDomain(session, name) {
-  return new Proxy({}, {
-    get(target, key /* , receiver */) {
-      if (typeof key === 'string') {
-        return (params) => {
-          return new Promise((resolve, reject) => {
-            const method = `${name}.${key}`;
-            session.post(method, params, (err, value) => {
-              if (err) reject(Object.assign(err, { method, params }));
-              else resolve(value);
-            });
-          });
-        };
-      }
-      return target[key];
-    }
-  });
+if (typeof it === 'undefined') {
+  global.it = require('../../lib/test-lang');
+}
+if (typeof describe === 'undefined') {
+  global.describe = (name, fn) => fn();
 }
 
-function reportError(e) {
-  console.log('failed', e)
-}
+describe('failing a', () => {
+  it('hello is 42', () => {
+    const actual = 'hello';
+    const expected = 21;
 
-async function test(name, fn) {
-  const session = new Session();
-  session.connect();
+    console.error('throw error');
+    throw new Error('huh?');
 
-  const assertErrorRegex = '^.+\\/node_modules\\/assertion-error\\/index\\.js$';
-
-  const urlFromScriptId = new Map();
-  session.on('Debugger.scriptParsed', ({ params: { scriptId, url } }) => {
-    urlFromScriptId.set(scriptId, url);
+    // Find statement (or arrow body?) containing the call frame, then print:
+    // 1. Any non-literal expression, with object and array literals counting as literals
+    // 2. That is passed as a function argument
+    // 3. Also, maybe: Current values from the scope, maybe only if they appear..?
+    //    A meaningful limit may be "only up to the next function scope"..?
+    expect(actual).to.eq(new Map([['answer', `The answer is ${expected * 2}`]]));
+    /*     |             |                   |                |
+           |             |                   |                42
+           |             |                   "The answer is 42"
+           | "hello"     Map { "answer" => "The answer is 42" }
+     */
+    expect(actual).to.eq(expected * 2);
   });
 
-  session.on('Debugger.paused', ({ params }) => {
-    // TODO: Potentially write some meta info on a failed assertion.
-    // Out of process, we could gather the state of the various frames/scopes.
-    // From within the process, we can't really do much since we can't inspect
-    // the RemoteObjects that contain the scope state.
-    console.log('Paused!', params.callFrames.find(callFrame => {
-      return callFrame.url.endsWith('/a.test.js');
-    }));
+  it('read on undefined', () => {
+    const actual = module;
+    const expected = 21;
+
+    expect(actual).property('foo').property('bar').to.eq(expected * 2);
   });
-
-  const Debugger = getDomain(session, 'Debugger');
-  const Runtime = getDomain(session, 'Runtime');
-
-  await Debugger.enable();
-  await Runtime.enable();
-
-  const uniqDebugId = `$$$_test_debug_assertion_error_$$$`;
-  await Runtime.evaluate({
-    expression: `void (global[${JSON.stringify(uniqDebugId)}] = debug)`,
-    includeCommandLineAPI: true,
-  });
-
-  const assertErrorBrk = await Debugger.setBreakpointByUrl({
-    urlRegex: assertErrorRegex,
-    lineNumber: 0,
-    condition: `(${
-      (dbgId) => {
-        if (global[dbgId]) {
-          const dbg = global[dbgId];
-          dbg(AssertionError);
-        }
-        return false;
-      }})(${JSON.stringify(uniqDebugId)})`,
-  });
-  if (assertErrorBrk.locations.length) {
-    for (const { scriptId } of assertErrorBrk.locations) {
-      const scriptUrl = urlFromScriptId.get(scriptId);
-      if (!scriptUrl) continue;
-      const scriptPath = fileURLToPath(scriptUrl);
-      await Runtime.evaluate({
-        expression: `debug(require(${JSON.stringify(scriptPath)}))`,
-        includeCommandLineAPI: true,
-      });
-    }
-  }
-
-  // get coverage
-  const Profiler = getDomain(session, 'Profiler');
-  await Profiler.enable();
-  await Profiler.startPreciseCoverage({ detailed: true, callCount: false });
-
-  try {
-    fn();
-  } catch (e) {
-    reportError(e);
-  } finally {
-    const { result } = await Profiler.takePreciseCoverage();
-    console.log('a.test.js', ...result.find(({ url }) => url.endsWith('a.test.js')).functions);
-  }
-}
-
-test('hello is 42', () => {
-  const actual = 'hello';
-  const expected = 42;
-
-  expect(actual).to.eq(expected);
 });

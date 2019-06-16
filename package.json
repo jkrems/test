@@ -2,7 +2,7 @@
   "name": "test",
   "version": "0.0.0",
   "description": "An experimental test runner",
-  "main": "lib/test.js",
+  "main": "lib/test-lang.js",
   "directories": {
     "example": "examples"
   },
@@ -21,10 +21,18 @@
   },
   "homepage": "https://github.com/jkrems/test#readme",
   "devDependencies": {
+    "ava": "^2.1.0",
     "chai": "^4.2.0",
+    "jest": "^24.8.0",
+    "mocha": "^6.1.4",
     "puppeteer": "^1.17.0"
   },
   "dependencies": {
-    "chrome-remote-interface": "^0.27.2"
+    "acorn": "^6.1.1",
+    "acorn-walk": "^6.1.1",
+    "async": "^3.0.1",
+    "chrome-remote-interface": "^0.27.2",
+    "kleur": "^3.0.3",
+    "strip-ansi": "^5.2.0"
   }
 }
