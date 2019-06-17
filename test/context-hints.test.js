@@ -1,6 +1,7 @@
 'use strict';
 
 const { assert, expect } = require('chai');
+const stripAnsi = require('strip-ansi');
 
 const ExceptionContextCapture = require('../lib/exception-context-capture');
 
@@ -27,16 +28,35 @@ describe('context hints', () => {
       );
     });
     expect(result).eq(null);
-    // console.log({ error, context });
+    expect(error).property('message').include('is not a function');
+    expect(context).include('is not a function');
   });
 
   it('shows user code for assertion library error', async () => {
     const { result, error, context } = await capture.fromAsyncCall(() => {
-      assert(2 * 3 === 2 + 3);
-      expect(2 * 3).eq(2 + 3);
+      assert(2 * 3 === 2 + 3, 'Math works');
     });
     expect(result).eq(null);
-    // console.log({ error, context });
+    expect(error).property('message').eq('Math works');
+    expect(stripAnsi(context)).eq(`\
+undefined
+
+closure:
+  capture: ExceptionContextCapture
+closure:
+  assert: [Function]
+  expect: [Function]
+  stripAnsi: [Function]
+  ExceptionContextCapture: [Function]
+
+ 37 ▏      assert(2 * 3 === 2 + 3, 'Math works');
+    ▏      ┆     ┆┆ ┆ ┆ ┆   ┆ ┆ ┆  ┆
+    ▏      ┆     ┆┆ ┆ ┆ ┆   2 5 3  'Math works'
+    ▏      ┆     ┆2 6 3 false
+ 🐛 ▏      ┆     [AssertionError: Math works]
+    ▏      [Function]
+    ▏
+`);
   });
 
   it('returns null if there is no error', async () => {
