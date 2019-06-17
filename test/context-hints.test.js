@@ -49,6 +49,7 @@ closure:
   stripAnsi: [Function]
   ExceptionContextCapture: [Function]
 
+${error.stack.split('\n')[1]}
  37 ▏      assert(2 * 3 === 2 + 3, 'Math works');
     ▏      ┆     ┆┆ ┆ ┆ ┆   ┆ ┆ ┆  ┆
     ▏      ┆     ┆┆ ┆ ┆ ┆   2 5 3  'Math works'
