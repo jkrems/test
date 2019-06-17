@@ -32,7 +32,7 @@ describe('context hints', () => {
 
   it('shows user code for assertion library error', async () => {
     const { result, error, context } = await capture.fromAsyncCall(() => {
-      assert(2 - 2);
+      assert(2 * 3 === 2 + 3);
       expect(2 * 3).eq(2 + 3);
     });
     expect(result).eq(null);
