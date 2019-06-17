@@ -1,6 +1,6 @@
 'use strict';
 
-const { expect } = require('chai');
+const { assert, expect } = require('chai');
 
 const ExceptionContextCapture = require('../lib/exception-context-capture');
 
@@ -18,80 +18,6 @@ describe('context hints', () => {
   // two options: capture details on throw or capture for exception types
   it('captures details on thrown exceptions', async () => {
     const { result, error, context } = await capture.fromAsyncCall(() => {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
       const a = new Map([['x', 42], ['foo', 'bar']]);
       const b = [2, 3];
       const c = new Date('2019-06-16T04:47:08.240Z');
@@ -99,6 +25,15 @@ describe('context hints', () => {
       a.set('y', Date.now())['g' < b](
         someLongerIdentifier, c
       );
+    });
+    expect(result).eq(null);
+    // console.log({ error, context });
+  });
+
+  it('shows user code for assertion library error', async () => {
+    const { result, error, context } = await capture.fromAsyncCall(() => {
+      assert(2 - 2);
+      expect(2 * 3).eq(2 + 3);
     });
     expect(result).eq(null);
     // console.log({ error, context });
