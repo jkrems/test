@@ -39,17 +39,6 @@ describe('context hints', () => {
     expect(result).eq(null);
     expect(error).property('message').eq('Math works');
     expect(stripAnsi(context)).eq(`\
-undefined
-
-closure:
-  capture: ExceptionContextCapture
-closure:
-  assert: [Function]
-  expect: [Function]
-  stripAnsi: [Function]
-  ExceptionContextCapture: [Function]
-
-${error.stack.split('\n')[1]}
  37 ▏      assert(2 * 3 === 2 + 3, 'Math works');
     ▏      ┆     ┆┆ ┆ ┆ ┆   ┆ ┆ ┆  ┆
     ▏      ┆     ┆┆ ┆ ┆ ┆   2 5 3  'Math works'
@@ -57,6 +46,7 @@ ${error.stack.split('\n')[1]}
  🐛 ▏      ┆     [AssertionError: Math works]
     ▏      [Function]
     ▏
+${error.stack.split('\n')[1]}
 `);
   });
 

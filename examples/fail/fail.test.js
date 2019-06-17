@@ -2,7 +2,7 @@
 
 const { expect } = require('chai');
 
-describe('failing a', () => {
+describe('failing', () => {
   it('hello is 42', () => {
     const actual = 'hello';
     const expected = 21;
