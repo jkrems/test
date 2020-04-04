@@ -28,7 +28,7 @@
     "puppeteer": "^1.17.0"
   },
   "dependencies": {
-    "acorn": "^6.1.1",
+    "acorn": "^6.4.1",
     "acorn-walk": "^6.1.1",
     "async": "^3.0.1",
     "chrome-remote-interface": "^0.27.2",
