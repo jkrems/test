@@ -30,7 +30,7 @@
   "dependencies": {
     "acorn": "^6.1.1",
     "acorn-walk": "^6.1.1",
-    "async": "^3.0.1",
+    "async": "^3.2.2",
     "chrome-remote-interface": "^0.27.2",
     "kleur": "^3.0.3",
     "strip-ansi": "^5.2.0"
